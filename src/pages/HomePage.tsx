@@ -14,6 +14,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
   const [dbProducts, setDbProducts] = useState<any[]>([]);
   const [showAllProducts, setShowAllProducts] = useState(false);
   const loadProducts = async () => {
+
   const { data, error } = await supabase
     .from("products")
     .select("*")
@@ -165,74 +166,71 @@ import banner3 from "../assets/banners/banner-3.jpg";
     </div>
 
     <div className="grid md:grid-cols-3 gap-8">
-  {(showAllProducts
-  ? dbProducts
-  : dbProducts.slice(0, 6)
-).map((product, index) => {
-  return (
-    <Link
-      key={product.id || index}
-      to={`/product/${product.id}`}
-    >
-      <div
-        className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-[#D4B08C] transition"
-      >
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-[420px] object-cover"
-        />
+      {(showAllProducts
+        ? dbProducts
+        : dbProducts.slice(0, 6)
+      ).map((product, index) => {
+        return (
+          <Link
+            key={product.id || index}
+            to={`/product/${product.id}`}
+          >
+            <div className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-[#D4B08C] transition">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-[420px] object-cover"
+              />
 
-        <div className="p-6">
-          <p className="text-sm text-[#D4B08C] mb-2">
-            {product.category}
-          </p>
+              <div className="p-6">
+                <p className="text-sm text-[#D4B08C] mb-2">
+                  {product.category}
+                </p>
 
-          <h3 className="text-xl font-semibold mb-2">
-            {product.name}
-          </h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  {product.name}
+                </h3>
 
-          <p className="text-gray-400 text-sm mb-4">
-            {product.description}
-          </p>
+                <p className="text-gray-400 text-sm mb-4">
+                  {product.description}
+                </p>
 
-                    <span className="text-[#D4B08C] font-semibold text-lg">
-            Rp {Number(product.price).toLocaleString("id-ID")}
-          </span>
-        </div>
-      </div>
-    </Link>
-    );
-  })}
+                <span className="text-[#D4B08C] font-semibold text-lg">
+                  Rp {Number(product.price).toLocaleString("id-ID")}
+                </span>
+              </div>
+            </div>
+          </Link>
+        );
+      })}
     </div>
-  </div>
 
-  {dbProducts.length > 6 && (
-  <div className="text-center mt-10">
-    <button
-      onClick={() =>
-        setShowAllProducts(!showAllProducts)
-      }
-      className="
-        px-8
-        py-3
-        rounded-xl
-        border
-        border-[#D4B08C]
-        text-[#D4B08C]
-        hover:bg-[#D4B08C]
-        hover:text-black
-        transition
-        font-medium
-      "
-    >
-      {showAllProducts
-        ? "Tampilkan Lebih Sedikit"
-        : `Lihat Semua Produk (${dbProducts.length})`}
-    </button>
+    {dbProducts.length > 6 && (
+      <div className="text-center mt-10">
+        <button
+          onClick={() =>
+            setShowAllProducts(!showAllProducts)
+          }
+          className="
+            px-8
+            py-3
+            rounded-xl
+            border
+            border-[#D4B08C]
+            text-[#D4B08C]
+            hover:bg-[#D4B08C]
+            hover:text-black
+            transition
+            font-medium
+          "
+        >
+          {showAllProducts
+            ? "Tampilkan Lebih Sedikit"
+            : `Lihat Semua Produk (${dbProducts.length})`}
+        </button>
+      </div>
+    )}
   </div>
-)}
-
 </section>
 
       {/* KATEGORI */}
