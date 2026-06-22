@@ -196,18 +196,9 @@ export default function AdminPage() {
 
       if (imagePath) {
 
-        const { data: files, error: listError } =
-            await supabase.storage
-                .from("product-images")
-                .list("", {
-                    limit: 100,
-                    offset: 0,
-                });
-
-
-        const { data, error } = await supabase.storage
-          .from("product-images")
-          .remove([imagePath]);
+        await supabase.storage
+  .from("product-images")
+  .remove([imagePath]);
 
       }
     }
