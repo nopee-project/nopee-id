@@ -19,12 +19,9 @@ import banner3 from "../assets/banners/banner-3.jpg";
     .select("*")
     .order("created_at", { ascending: false });
 
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
 
   if (!error) {
     setDbProducts(data || []);
-    console.log("JUMLAH PRODUK:", data?.length);
   }
 };
 

@@ -51,7 +51,7 @@ export default function AdminPage() {
       });
 
     if (error) {
-      console.log(error);
+      console.error(error);
       return;
     }
 
@@ -80,7 +80,7 @@ export default function AdminPage() {
               .from("product-images")
               .remove([oldImagePath]);
 
-          console.log(
+          console.error(
             "DELETE OLD IMAGE ERROR:",
             deleteError
           );
@@ -194,9 +194,6 @@ export default function AdminPage() {
         product.image.split("/product-images/")[1]
       );
 
-      console.log("FULL URL:", product.image);
-      console.log("IMAGE PATH:", imagePath);
-
       if (imagePath) {
 
         const { data: files, error: listError } =
@@ -207,15 +204,11 @@ export default function AdminPage() {
                     offset: 0,
                 });
 
-            console.log("FILES:", files);
-            console.log("LIST ERROR:", listError);
 
         const { data, error } = await supabase.storage
           .from("product-images")
           .remove([imagePath]);
 
-        console.log("DELETE STORAGE DATA:", data);
-        console.log("DELETE STORAGE ERROR:", error);
       }
     }
 
