@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
-
+import { Link } from "react-router-dom";
 import logo from "../assets/logo-nopee.png";
 
 import banner1 from "../assets/banners/banner-1.jpg";
@@ -169,9 +169,12 @@ import banner3 from "../assets/banners/banner-3.jpg";
 
     <div className="grid md:grid-cols-3 gap-8">
   {dbProducts.map((product, index) => {
-    return (
+  return (
+    <Link
+      key={product.id || index}
+      to={`/product/${product.id}`}
+    >
       <div
-        key={product.id || index}
         className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-[#D4B08C] transition"
       >
         <img
@@ -193,11 +196,12 @@ import banner3 from "../assets/banners/banner-3.jpg";
             {product.description}
           </p>
 
-          <span className="text-[#D4B08C] font-semibold text-lg">
+                    <span className="text-[#D4B08C] font-semibold text-lg">
             Rp {Number(product.price).toLocaleString("id-ID")}
           </span>
         </div>
       </div>
+    </Link>
     );
   })}
     </div>

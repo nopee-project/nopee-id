@@ -7,26 +7,34 @@ import {
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
+import ProductDetailPage from "./pages/ProductDetailPage";  
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={<HomePage />}
-        />
+  <Route
+    path="/"
+    element={<HomePage />}
+  />
 
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
+  <Route
+    path="/login"
+    element={<LoginPage />}
+  />
 
-        <Route
-          path="/admin"
-          element={<AdminPage />}
-        />
-      </Routes>
+  <Route
+    path="/admin"
+    element={<AdminPage />}
+  />
+
+  <Route
+    path="/product/:id"
+    element={<ProductDetailPage />}
+  />
+
+  
+</Routes>
     </BrowserRouter>
   );
 }
