@@ -12,7 +12,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
 
   const [currentBanner, setCurrentBanner] = useState(0);
   const [dbProducts, setDbProducts] = useState<any[]>([]);
-  
+  const [showAllProducts, setShowAllProducts] = useState(false);
   const loadProducts = async () => {
   const { data, error } = await supabase
     .from("products")
@@ -165,7 +165,10 @@ import banner3 from "../assets/banners/banner-3.jpg";
     </div>
 
     <div className="grid md:grid-cols-3 gap-8">
-  {dbProducts.map((product, index) => {
+  {(showAllProducts
+  ? dbProducts
+  : dbProducts.slice(0, 6)
+).map((product, index) => {
   return (
     <Link
       key={product.id || index}
@@ -203,6 +206,33 @@ import banner3 from "../assets/banners/banner-3.jpg";
   })}
     </div>
   </div>
+
+  {dbProducts.length > 6 && (
+  <div className="text-center mt-10">
+    <button
+      onClick={() =>
+        setShowAllProducts(!showAllProducts)
+      }
+      className="
+        px-8
+        py-3
+        rounded-xl
+        border
+        border-[#D4B08C]
+        text-[#D4B08C]
+        hover:bg-[#D4B08C]
+        hover:text-black
+        transition
+        font-medium
+      "
+    >
+      {showAllProducts
+        ? "Tampilkan Lebih Sedikit"
+        : `Lihat Semua Produk (${dbProducts.length})`}
+    </button>
+  </div>
+)}
+
 </section>
 
       {/* KATEGORI */}
