@@ -22,14 +22,20 @@ import banner3 from "../assets/banners/banner-3.jpg";
     "Busana Muslim",
   ];
   const [showAllProducts, setShowAllProducts] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredProducts =
-    selectedCategory === "Semua"
-        ? dbProducts
-        : dbProducts.filter(
-            (product) =>
-            product.category === selectedCategory
-        );
+  const filteredProducts = dbProducts.filter((product) => {
+  const matchCategory =
+    selectedCategory === "Semua" ||
+    product.category === selectedCategory;
+
+  const matchSearch =
+    product.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+  return matchCategory && matchSearch;
+});
   const loadProducts = async () => {
 
   const { data, error } = await supabase
@@ -180,6 +186,32 @@ import banner3 from "../assets/banners/banner-3.jpg";
   <p className="text-gray-400">
     Koleksi terbaru dari katalog Nopee
   </p>
+
+  <div className="mt-8 max-w-md mx-auto">
+  <input
+    type="text"
+    placeholder="Cari produk..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="
+      w-full
+      px-4
+      py-3
+      rounded-xl
+      bg-zinc-900
+      border
+      border-zinc-700
+      text-white
+      placeholder-gray-500
+      focus:outline-none
+      focus:border-[#D4B08C]
+    "
+  />
+</div>
+
+<p className="text-gray-500 mt-4">
+  Menampilkan {filteredProducts.length} produk
+</p>
 
   <div className="flex flex-wrap justify-center gap-3 mt-8">
     {categories.map((category) => (
