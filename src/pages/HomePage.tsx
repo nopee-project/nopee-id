@@ -390,7 +390,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
       {/* FOOTER */}
       <footer className="border-t border-zinc-800 py-8">
         <div className="max-w-7xl mx-auto px-6 text-center text-gray-500">
-          © {new Date().getFullYear()} Nopee. All Rights Reserved.
+          © 2023 Nopee. All Rights Reserved.
         </div>
       </footer>
     </div>

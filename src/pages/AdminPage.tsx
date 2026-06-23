@@ -13,6 +13,8 @@ export default function AdminPage() {
 
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState("");
@@ -223,6 +225,20 @@ export default function AdminPage() {
     window.location.href = "/login";
   };
 
+  const filteredProducts = products.filter((product) =>
+  product.name
+    ?.toLowerCase()
+    .includes(search.toLowerCase())
+);
+  const totalPages = Math.ceil(
+  filteredProducts.length / itemsPerPage
+);
+
+const paginatedProducts = filteredProducts.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
+
   return (
     <div className="min-h-screen bg-black text-white p-10">
       <div className="max-w-xl mx-auto">
@@ -319,71 +335,157 @@ export default function AdminPage() {
             Daftar Produk
           </h2>
 
-          <input
-            type="text"
-            placeholder="Cari produk..."
-            value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
-            className="w-full p-3 mb-6 rounded bg-zinc-800"
-          />
+          <div className="flex justify-between items-center gap-4 mb-6">
+  <input
+    type="text"
+    placeholder="Cari produk..."
+    value={search}
+    onChange={(e) => {
+  setSearch(e.target.value);
+  setCurrentPage(1);
+}}
+    className="flex-1 p-3 rounded bg-zinc-800"
+  />
 
-          <div className="space-y-4">
-            {products
-              .filter((product) =>
-                product.name
-                  ?.toLowerCase()
-                  .includes(search.toLowerCase())
-              )
-              .map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl"
+  <select
+    value={itemsPerPage}
+    onChange={(e) => {
+  setItemsPerPage(Number(e.target.value));
+  setCurrentPage(1);
+}}
+    className="p-3 rounded bg-zinc-800"
+  >
+    <option value={10}>10</option>
+    <option value={25}>25</option>
+    <option value={50}>50</option>
+  </select>
+</div>
+
+          <div className="overflow-x-auto">
+  <table className="w-full border-collapse">
+    <thead>
+        <tr className="border-b border-zinc-700 text-left">
+            <th className="p-3 w-16">No</th>
+            <th className="p-3">Foto</th>
+            <th className="p-3">Nama Produk</th>
+            <th className="p-3">Kategori</th>
+            <th className="p-3 text-right">Harga</th>
+            <th className="p-3">Aksi</th>
+        </tr>
+    </thead>
+
+    <tbody>
+      {paginatedProducts.map((product, index) => (
+          <tr
+            key={product.id}
+            className="border-b border-zinc-800 hover:bg-zinc-900"
+          >
+            <td className="p-3 text-zinc-400">
+                {(currentPage - 1) * itemsPerPage + index + 1}
+            </td>
+
+            <td className="p-3">
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-14 h-14 object-cover rounded-lg"
+              />
+            </td>
+
+            <td className="p-3 font-medium">
+              {product.name}
+            </td>
+
+            <td className="p-3 text-zinc-400">
+              {product.category}
+            </td>
+
+            <td className="p-3 text-right whitespace-nowrap font-medium">
+                Rp {Number(product.price).toLocaleString("id-ID")}
+            </td>
+
+            <td className="p-3">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => startEdit(product)}
+                  className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
                 >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-24 h-24 object-cover rounded-lg mb-3"
-                  />
+                  Edit
+                </button>
 
-                  <h3 className="text-xl font-semibold">
-                    {product.name}
-                  </h3>
+                <button
+                  onClick={() => deleteProduct(product)}
+                  className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
+                >
+                  Hapus
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+    </tbody>
+  </table>
 
-                  <p>
-                    Rp{" "}
-                    {Number(
-                      product.price
-                    ).toLocaleString("id-ID")}
-                  </p>
+  <div className="mt-4 text-sm text-zinc-400">
+  Menampilkan {paginatedProducts.length} dari{" "}
+  {filteredProducts.length} produk
+</div>
 
-                  <p className="text-zinc-400">
-                    {product.category}
-                  </p>
+<div className="flex justify-center gap-2 mt-6">
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.max(prev - 1, 1)
+      )
+    }
+    disabled={currentPage === 1}
+    className="
+      px-4 py-2 rounded
+      bg-zinc-800
+      disabled:opacity-40
+    "
+  >
+    Prev
+  </button>
 
-                  <div className="flex gap-2 mt-3">
-                    <button
-                      onClick={() =>
-                        startEdit(product)
-                      }
-                      className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-                    >
-                      Edit
-                    </button>
+  {Array.from(
+    { length: totalPages },
+    (_, i) => i + 1
+  ).map((page) => (
+    <button
+      key={page}
+      onClick={() => setCurrentPage(page)}
+      className={`
+        px-4 py-2 rounded
+        ${
+          currentPage === page
+            ? "bg-[#D4B08C] text-black"
+            : "bg-zinc-800"
+        }
+      `}
+    >
+      {page}
+    </button>
+  ))}
 
-                    <button
-                      onClick={() =>
-                        deleteProduct(product)
-                      }
-                      className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
-                    >
-                      Hapus
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(prev + 1, totalPages)
+      )
+    }
+    disabled={currentPage === totalPages}
+    className="
+      px-4 py-2 rounded
+      bg-zinc-800
+      disabled:opacity-40
+    "
+  >
+    Next
+  </button>
+</div>
+
+</div>
         </div>
       </div>
     </div>
