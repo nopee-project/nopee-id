@@ -100,7 +100,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
       </header>
 
       {/* HERO */}
-      <section className="relative min-h-[80vh] overflow-hidden">
+      <section className="relative min-h-[65vh] overflow-hidden">
         {banners.map((banner, index) => (
           <div
             key={index}
@@ -124,20 +124,17 @@ import banner3 from "../assets/banners/banner-3.jpg";
             <div className="max-w-7xl mx-auto px-6 w-full">
                 <div className="max-w-4xl mx-auto text-center">
               <p className="tracking-[0.5em] text-[#D4B08C] text-xs uppercase mb-5 pt-10">
-                NOPEE
+                NOPEE.
               </p>
 
               <h1 className="font-luxury text-2xl md:text-4xl font-semibold leading-[0.9] mb-6">
                 Fashion Premium
-                <br />
-                Untuk Keluarga
               </h1>
-
-              <p className="text-gray-300 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl">
-                Koleksi fashion wanita, pria, anak dan busana muslim
-                dengan kualitas terbaik, desain elegan dan harga
-                yang terjangkau.
-              </p>
+                
+                <p className="text-gray-300 text-lg md:text-1xl leading-relaxed mb-10 max-w-2xl mx-auto">
+                Koleksi fashion premium untuk seluruh keluarga
+                dengan desain elegan dan kualitas terbaik.
+                </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
