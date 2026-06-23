@@ -120,9 +120,9 @@ import banner3 from "../assets/banners/banner-3.jpg";
           </div>
         ))}
 
-        <div className="relative z-10 h-full flex items-center">
-          <div className="max-w-7xl mx-auto px-6 w-full">
-            <div className="max-w-3xl">
+        <div className="relative z-10 h-full flex items-center justify-center">
+            <div className="max-w-7xl mx-auto px-6 w-full">
+                <div className="max-w-4xl mx-auto text-center">
               <p className="tracking-[0.5em] text-[#D4B08C] text-xs uppercase mb-5 pt-10">
                 NOPEE
               </p>
@@ -139,7 +139,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
                 yang terjangkau.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="#products"
                   className="bg-[#D4B08C] text-black px-8 py-4 rounded-xl font-semibold hover:opacity-90 transition"
@@ -157,7 +157,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
                 </a>
               </div>
 
-              <div className="flex gap-3 mt-10">
+              <div className="flex gap-3 mt-10 justify-center">
                 {banners.map((_, index) => (
                   <button
                     key={index}
