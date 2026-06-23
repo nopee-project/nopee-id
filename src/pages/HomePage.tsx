@@ -12,7 +12,24 @@ import banner3 from "../assets/banners/banner-3.jpg";
 
   const [currentBanner, setCurrentBanner] = useState(0);
   const [dbProducts, setDbProducts] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] =
+    useState("Semua");
+  const categories = [
+    "Semua",
+    "Fashion Wanita",
+    "Fashion Pria",
+    "Fashion Anak",
+    "Busana Muslim",
+  ];
   const [showAllProducts, setShowAllProducts] = useState(false);
+
+  const filteredProducts =
+    selectedCategory === "Semua"
+        ? dbProducts
+        : dbProducts.filter(
+            (product) =>
+            product.category === selectedCategory
+        );
   const loadProducts = async () => {
 
   const { data, error } = await supabase
@@ -156,20 +173,48 @@ import banner3 from "../assets/banners/banner-3.jpg";
 <section id="products" className="py-20">
   <div className="max-w-7xl mx-auto px-6">
     <div className="text-center mb-14">
-      <h2 className="font-luxury text-4xl md:text-5xl font-semibold mb-4">
-        Produk Unggulan
-      </h2>
+  <h2 className="font-luxury text-4xl md:text-5xl font-semibold mb-4">
+    Produk Unggulan
+  </h2>
 
-      <p className="text-gray-400">
-        Koleksi terbaru dari katalog Nopee
-      </p>
-    </div>
+  <p className="text-gray-400">
+    Koleksi terbaru dari katalog Nopee
+  </p>
+
+  <div className="flex flex-wrap justify-center gap-3 mt-8">
+    {categories.map((category) => (
+      <button
+        key={category}
+        onClick={() => {
+          setSelectedCategory(category);
+          setShowAllProducts(false);
+        }}
+        className={`
+          px-5
+          py-2
+          rounded-full
+          border
+          transition
+          ${
+            selectedCategory === category
+              ? "bg-[#D4B08C] text-black border-[#D4B08C]"
+              : "border-zinc-700 text-gray-300 hover:border-[#D4B08C]"
+          }
+        `}
+      >
+        {category}
+      </button>
+    ))}
+  </div>
+</div>
 
     <div className="grid md:grid-cols-3 gap-8">
-      {(showAllProducts
-        ? dbProducts
-        : dbProducts.slice(0, 6)
-      ).map((product, index) => {
+      {(
+  showAllProducts
+    ? filteredProducts
+    : filteredProducts.slice(0, 6)
+).map((product, index) => {
+
         return (
           <Link
             key={product.id || index}
@@ -205,7 +250,9 @@ import banner3 from "../assets/banners/banner-3.jpg";
       })}
     </div>
 
-    {dbProducts.length > 6 && (
+    
+  {filteredProducts.length > 6 && (
+
       <div className="text-center mt-10">
         <button
           onClick={() =>
@@ -226,7 +273,9 @@ import banner3 from "../assets/banners/banner-3.jpg";
         >
           {showAllProducts
             ? "Tampilkan Lebih Sedikit"
-            : `Lihat Semua Produk (${dbProducts.length})`}
+            : `Lihat Semua Produk (${filteredProducts.length})`
+        }
+
         </button>
       </div>
     )}
