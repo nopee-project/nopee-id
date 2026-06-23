@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +13,11 @@ export default function AdminPage() {
 
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [showForm, setShowForm] = useState(false);
+
+  const formRef = useRef<HTMLDivElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -166,6 +171,7 @@ export default function AdminPage() {
       setEditingId(null);
       setCurrentImage("");
       setPreviewImage("");
+      setShowForm(false);
     } catch (err) {
       console.error(err);
       alert("Terjadi kesalahan");
@@ -173,9 +179,19 @@ export default function AdminPage() {
   };
 
   const startEdit = (product: any) => {
-    setEditingId(product.id);
+  setEditingId(product.id);
+  setShowForm(true);
 
-    setName(product.name || "");
+  setTimeout(() => {
+    formRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    nameInputRef.current?.focus();
+  }, 100);
+
+  setName(product.name || "");
     setPrice(String(product.price || ""));
     setCategory(product.category || "");
     setDescription(product.description || "");
@@ -255,11 +271,34 @@ const paginatedProducts = filteredProducts.slice(
           </button>
         </div>
 
+        <button
+  onClick={() => setShowForm(!showForm)}
+  className="
+    w-full
+    mb-6
+    bg-zinc-900
+    border
+    border-zinc-700
+    rounded-xl
+    py-4
+    font-semibold
+    hover:border-[#D4B08C]
+    transition
+  "
+>
+  {showForm
+    ? "Tutup Form Produk"
+    : "+ Tambah Produk"}
+</button>
+
+{showForm && (
+  <div ref={formRef}>
         <input
-          className="w-full p-3 mb-4 rounded bg-zinc-800"
-          placeholder="Nama Produk"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+            ref={nameInputRef}
+            className="w-full p-3 mb-4 rounded bg-zinc-800"
+            placeholder="Nama Produk"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
         />
 
         <input
@@ -329,6 +368,9 @@ const paginatedProducts = filteredProducts.slice(
             ? "Update Produk"
             : "Simpan Produk"}
         </button>
+
+          </div>
+)}
 
         <div className="mt-16">
           <h2 className="text-3xl font-bold mb-6">
