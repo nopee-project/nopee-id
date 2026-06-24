@@ -23,6 +23,7 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState("created_at");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [filterCategory, setFilterCategory] = useState("");
   const [showForm, setShowForm] = useState(false);
 
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -251,6 +252,7 @@ const deleteCategory = async (
       imageUrl = data.publicUrl;
     }
 
+    
     let error: any;
 
       if (editingId) {
@@ -334,7 +336,9 @@ const deleteCategory = async (
   }, 100);
 
   setName(product.name || "");
-    setPrice(String(product.price || ""));
+    setPrice(
+  Number(product.price).toLocaleString("id-ID")
+);
     setCategory(product.category || "");
     setDescription(product.description || "");
 
@@ -403,11 +407,18 @@ const deleteCategory = async (
   };
 
 const filteredProducts = products
-  .filter((product) =>
-    product.name
-      ?.toLowerCase()
-      .includes(search.toLowerCase())
-  )
+  .filter((product) => {
+    const matchSearch =
+      product.name
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
+
+    const matchCategory =
+      !filterCategory ||
+      product.category === filterCategory;
+
+    return matchSearch && matchCategory;
+  })
   .sort((a, b) => {
     let result = 0;
 
@@ -436,8 +447,11 @@ const filteredProducts = products
       : -result;
   });
 
-  const totalPages = Math.ceil(
-  filteredProducts.length / itemsPerPage
+  const totalPages = Math.max(
+  1,
+  Math.ceil(
+    filteredProducts.length / itemsPerPage
+  )
 );
 
 const paginatedProducts = filteredProducts.slice(
@@ -633,61 +647,82 @@ const paginatedProducts = filteredProducts.slice(
     placeholder="Cari produk..."
     value={search}
     onChange={(e) => {
-  setSearch(e.target.value);
-  setCurrentPage(1);
-}}
+      setSearch(e.target.value);
+      setCurrentPage(1);
+    }}
     className="flex-1 p-3 rounded bg-zinc-800"
   />
 
   <select
-  value={`${sortField}-${sortDirection}`}
-  onChange={(e) => {
-    const [field, direction] =
-      e.target.value.split("-");
+    value={filterCategory}
+    onChange={(e) => {
+      setFilterCategory(e.target.value);
+      setCurrentPage(1);
+    }}
+    className="p-3 rounded bg-zinc-800 min-w-[220px]"
+  >
+    <option value="">
+      Semua Kategori
+    </option>
 
-    setSortField(field);
-    setSortDirection(direction);
-  }}
-  className="p-3 rounded bg-zinc-800"
->
-  <option value="created_at-desc">
-    Terbaru
-  </option>
+    {categories.map((item) => (
+      <option
+        key={item.id}
+        value={item.name}
+      >
+        {item.name}
+      </option>
+    ))}
+  </select>
 
-  <option value="created_at-asc">
-    Terlama
-  </option>
+  <select
+    value={`${sortField}-${sortDirection}`}
+    onChange={(e) => {
+      const [field, direction] =
+        e.target.value.split("-");
 
-  <option value="name-asc">
-    Nama A-Z
-  </option>
+      setSortField(field);
+      setSortDirection(direction);
+    }}
+    className="p-3 rounded bg-zinc-800"
+  >
+    <option value="created_at-desc">
+      Terbaru
+    </option>
 
-  <option value="name-desc">
-    Nama Z-A
-  </option>
+    <option value="created_at-asc">
+      Terlama
+    </option>
 
-  <option value="price-asc">
-    Harga Termurah
-  </option>
+    <option value="name-asc">
+      Nama A-Z
+    </option>
 
-  <option value="price-desc">
-    Harga Termahal
-  </option>
-</select>
+    <option value="name-desc">
+      Nama Z-A
+    </option>
 
-<select
-  value={itemsPerPage}
-  onChange={(e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  }}
-  className="p-3 rounded bg-zinc-800"
->
-  <option value={10}>10</option>
-  <option value={25}>25</option>
-  <option value={50}>50</option>
-</select>
+    <option value="price-asc">
+      Harga Termurah
+    </option>
 
+    <option value="price-desc">
+      Harga Termahal
+    </option>
+  </select>
+
+  <select
+    value={itemsPerPage}
+    onChange={(e) => {
+      setItemsPerPage(Number(e.target.value));
+      setCurrentPage(1);
+    }}
+    className="p-3 rounded bg-zinc-800"
+  >
+    <option value={10}>10</option>
+    <option value={25}>25</option>
+    <option value={50}>50</option>
+  </select>
 </div>
 
           <div className="overflow-x-auto">
