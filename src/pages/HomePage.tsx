@@ -313,12 +313,34 @@ import banner3 from "../assets/banners/banner-3.jpg";
           key={product.id || index}
           to={`/product/${product.id}`}
         >
-          <div className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-[#D4B08C] transition">
+          <div
+  className="
+    group
+    bg-zinc-900
+    rounded-2xl
+    overflow-hidden
+    border
+    border-zinc-800
+    hover:border-[#D4B08C]
+    hover:-translate-y-1
+    hover:shadow-2xl
+    transition-all
+    duration-300
+  "
+>
             <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-[420px] object-cover"
-            />
+  src={product.image}
+  alt={product.name}
+  loading="lazy"
+  className="
+    w-full
+    h-[420px]
+    object-cover
+    transition-transform
+    duration-500
+    group-hover:scale-105
+  "
+/>
 
             <div className="p-6">
               <p className="text-sm text-[#D4B08C] mb-2">
@@ -329,11 +351,19 @@ import banner3 from "../assets/banners/banner-3.jpg";
                 {product.name}
               </h3>
 
-              <p className="text-gray-400 text-sm mb-4">
+              <p className="text-gray-400 text-sm mb-4 line-clamp-2 min-h-[40px]">
                 {product.description}
               </p>
 
-              <span className="text-[#D4B08C] font-semibold text-lg">
+              <span
+  className="
+    text-[#D4B08C]
+    font-semibold
+    text-lg
+    transition
+    group-hover:text-[#e8c59f]
+  "
+>
                 Rp {Number(product.price).toLocaleString("id-ID")}
               </span>
             </div>
