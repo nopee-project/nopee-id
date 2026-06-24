@@ -406,41 +406,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
   </div>
 </section>
 
-      {/* KATEGORI */}
-      <section
-        id="categories"
-        className="py-20 border-t border-zinc-800"
-      >
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <h2 className="font-luxury text-4xl md:text-5xl font-semibold mb-4">
-              Kategori Fashion
-            </h2>
-
-            <p className="text-gray-400">
-              Beragam pilihan fashion untuk seluruh keluarga
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              "Fashion Wanita",
-              "Fashion Pria",
-              "Fashion Anak",
-              "Busana Muslim",
-            ].map((item) => (
-              <div
-                key={item}
-                className="bg-zinc-900 border border-zinc-800 rounded-2xl p-10 text-center hover:border-[#D4B08C] transition"
-              >
-                <h3 className="text-xl font-semibold">
-                  {item}
-                </h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
 
       {/* ABOUT */}
       <section className="py-20 border-t border-zinc-800">
