@@ -7,6 +7,14 @@ export default function AdminPage() {
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const formatPrice = (value: string) => {
+    const numbersOnly = value.replace(/\D/g, "");
+
+    return numbersOnly.replace(
+        /\B(?=(\d{3})+(?!\d))/g,
+        "."
+    );
+  };
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -29,12 +37,11 @@ export default function AdminPage() {
 
   const logoutTimer = useRef<number | null>(null);
 
-  const categories = [
-    "Fashion Wanita",
-    "Fashion Pria",
-    "Fashion Anak",
-    "Busana Muslim",
-  ];
+  const [categories, setCategories] = useState<any[]>([]);
+  const [newCategory, setNewCategory] = useState("");
+
+  const [showCategoryManager, setShowCategoryManager] = useState(false);
+  
 
   useEffect(() => {
     const checkSession = async () => {
@@ -48,6 +55,7 @@ export default function AdminPage() {
       }
 
       fetchProducts();
+      fetchCategories();
     };
 
     checkSession();
@@ -86,6 +94,7 @@ export default function AdminPage() {
 }, []);
 
   const fetchProducts = async () => {
+    
     const { data, error } = await supabase
       .from("products")
       .select("*")
@@ -100,6 +109,99 @@ export default function AdminPage() {
 
     setProducts(data || []);
   };
+
+  const fetchCategories = async () => {
+  const { data, error } =
+    await supabase
+      .from("categories")
+      .select("*")
+      .order("name");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setCategories(data || []);
+};
+
+const addCategory = async () => {
+  const categoryName = newCategory.trim();
+
+  const existing = categories.find(
+  (item) =>
+    item.name.toLowerCase() ===
+    categoryName.toLowerCase()
+);
+
+if (existing) {
+  alert("Kategori sudah ada");
+  return;
+}
+
+  if (!categoryName) return;
+
+  const { error } = await supabase
+    .from("categories")
+    .insert([
+      {
+        name: categoryName,
+      },
+    ]);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  setCategory(categoryName);
+
+  setNewCategory("");
+
+  await fetchCategories();
+
+  alert("Kategori berhasil ditambahkan");
+};
+
+const deleteCategory = async (
+  categoryItem: any
+) => {
+
+  const { count } = await supabase
+    .from("products")
+    .select("*", {
+      count: "exact",
+      head: true,
+    })
+    .eq("category", categoryItem.name);
+
+  if ((count || 0) > 0) {
+    alert(
+      "Ada produk dalam kategori ini, pindahkan ke kategori lain terlebih dahulu."
+    );
+    return;
+  }
+
+  const confirmDelete = confirm(
+    `Hapus kategori "${categoryItem.name}" ?`
+  );
+
+  if (!confirmDelete) return;
+
+  const { error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", categoryItem.id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  fetchCategories();
+
+  alert("Kategori berhasil dihapus");
+};
 
   const saveProduct = async () => {
   try {
@@ -156,7 +258,9 @@ export default function AdminPage() {
           .from("products")
           .update({
             name,
-            price: Number(price),
+            price: Number(
+  price.replace(/\./g, "")
+),
             category,
             description,
             image: imageUrl,
@@ -175,7 +279,9 @@ export default function AdminPage() {
           .insert([
             {
               name,
-              price: Number(price),
+              price: Number(
+  price.replace(/\./g, "")
+),
               category,
               description,
               image: imageUrl,
@@ -287,7 +393,7 @@ export default function AdminPage() {
 
       window.location.href = "/login";
     },
-    30 * 1000
+    10 * 60 * 1000
   );
 };
 
@@ -386,26 +492,50 @@ const paginatedProducts = filteredProducts.slice(
             onChange={(e) => setName(e.target.value)}
         />
 
-        <input
-          className="w-full p-3 mb-4 rounded bg-zinc-800"
-          placeholder="Harga"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
+       <input
+  className="w-full p-3 mb-4 rounded bg-zinc-800"
+  placeholder="Harga"
+  value={price}
+  onChange={(e) =>
+  setPrice(
+    formatPrice(e.target.value)
+  )
+}
+/>
 
-        <select
-          className="w-full p-3 mb-4 rounded bg-zinc-800"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="">Pilih Kategori</option>
+<button
+  onClick={() =>
+    setShowCategoryManager(true)
+  }
+  className="
+    mb-4
+    bg-zinc-700
+    px-4
+    py-3
+    rounded
+  "
+>
+  Kelola Kategori
+</button>
 
-          {categories.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
+<select
+  className="w-full p-3 mb-4 rounded bg-zinc-800"
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+>
+  <option value="">
+    Pilih Kategori
+  </option>
+
+  {categories.map((item) => (
+    <option
+      key={item.id}
+      value={item.name}
+    >
+      {item.name}
+    </option>
+  ))}
+</select>
 
         <textarea
           className="w-full p-3 mb-4 rounded bg-zinc-800"
@@ -430,29 +560,64 @@ const paginatedProducts = filteredProducts.slice(
           </div>
         )}
 
-        <input
-          type="file"
-          className="mb-6"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
+        <div className="flex items-center gap-4 mb-6">
+  <label
+    htmlFor="image-upload"
+    className="
+      w-56
+      text-center
+      bg-[#D4B08C]
+      text-black
+      py-3
+      rounded
+      font-semibold
+      cursor-pointer
+      hover:opacity-90
+    "
+  >
+    Pilih Gambar
+  </label>
 
-            if (!file) return;
+  <span className="text-zinc-400">
+    {imageFile
+      ? imageFile.name
+      : "Belum ada file dipilih"}
+  </span>
 
-            setImageFile(file);
-            setPreviewImage(
-              URL.createObjectURL(file)
-            );
-          }}
-        />
+  <input
+    id="image-upload"
+    type="file"
+    className="hidden"
+    onChange={(e) => {
+      const file = e.target.files?.[0];
 
-        <button
-          onClick={saveProduct}
-          className="bg-[#D4B08C] text-black px-6 py-3 rounded font-semibold"
-        >
-          {editingId
-            ? "Update Produk"
-            : "Simpan Produk"}
-        </button>
+      if (!file) return;
+
+      setImageFile(file);
+
+      setPreviewImage(
+        URL.createObjectURL(file)
+      );
+    }}
+  />
+</div>
+
+<button
+  onClick={saveProduct}
+  className="
+    w-56
+    bg-[#D4B08C]
+    text-black
+    py-3
+    rounded
+    font-semibold
+    hover:opacity-90
+  "
+>
+  {editingId
+    ? "Update Produk"
+    : "Simpan Produk"}
+</button>
 
           </div>
 )}
@@ -650,6 +815,99 @@ const paginatedProducts = filteredProducts.slice(
 </div>
 
 </div>
+
+{showCategoryManager && (
+  <div
+    className="
+      fixed inset-0
+      bg-black/70
+      flex items-center justify-center
+      z-50
+    "
+  >
+    <div
+      className="
+        bg-zinc-900
+        p-6
+        rounded-xl
+        w-full
+        max-w-lg
+        border border-zinc-700
+      "
+    >
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2 mb-4">
+  <input
+    type="text"
+    placeholder="Kategori baru"
+    value={newCategory}
+    onChange={(e) =>
+      setNewCategory(e.target.value)
+    }
+    className="
+      flex-1
+      p-3
+      rounded
+      bg-zinc-800
+    "
+  />
+
+  <button
+    onClick={addCategory}
+    className="
+      bg-[#D4B08C]
+      text-black
+      px-4
+      rounded
+      font-semibold
+    "
+  >
+    Tambah
+  </button>
+</div>
+        {/* <h3 className="text-xl font-bold"> Kelola Kategori </h3> */}
+
+        <button
+          onClick={() =>
+            setShowCategoryManager(false)
+          }
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="space-y-2 max-h-80 overflow-y-auto">
+        {categories.map((item) => (
+          <div
+            key={item.id}
+            className="
+              flex justify-between items-center
+              bg-zinc-800
+              px-3 py-2
+              rounded
+            "
+          >
+            <span>{item.name}</span>
+
+            <button
+              onClick={() =>
+                deleteCategory(item)
+              }
+              className="
+                bg-red-600
+                px-3 py-1
+                rounded
+              "
+            >
+              Hapus
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
         </div>
       </div>
     </div>
