@@ -8,11 +8,16 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const login = async () => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const login = async (
+    e?: React.FormEvent
+  ) => {
+    e?.preventDefault();
+
+    const { error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (error) {
       alert(error.message);
@@ -29,28 +34,34 @@ export default function LoginPage() {
           Login Admin
         </h1>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 mb-4 rounded bg-zinc-800"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <form onSubmit={login}>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 mb-4 rounded bg-zinc-800"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 mb-4 rounded bg-zinc-800"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 mb-4 rounded bg-zinc-800"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+          />
 
-        <button
-          onClick={login}
-          className="w-full bg-[#D4B08C] text-black p-3 rounded font-semibold"
-        >
-          Login
-        </button>
+          <button
+            type="submit"
+            className="w-full bg-[#D4B08C] text-black p-3 rounded font-semibold"
+          >
+            Login
+          </button>
+        </form>
       </div>
     </div>
   );

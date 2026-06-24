@@ -13,6 +13,8 @@ export default function AdminPage() {
 
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [sortField, setSortField] = useState("created_at");
+  const [sortDirection, setSortDirection] = useState("desc");
   const [showForm, setShowForm] = useState(false);
 
   const formRef = useRef<HTMLDivElement | null>(null);
@@ -24,6 +26,8 @@ export default function AdminPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [currentImage, setCurrentImage] = useState("");
   const [previewImage, setPreviewImage] = useState("");
+
+  const logoutTimer = useRef<number | null>(null);
 
   const categories = [
     "Fashion Wanita",
@@ -48,6 +52,38 @@ export default function AdminPage() {
 
     checkSession();
   }, []);
+
+  useEffect(() => {
+  const events = [
+    "mousemove",
+    "mousedown",
+    "keypress",
+    "scroll",
+    "touchstart",
+  ];
+
+  resetLogoutTimer();
+
+  events.forEach((event) => {
+    window.addEventListener(
+      event,
+      resetLogoutTimer
+    );
+  });
+
+  return () => {
+    events.forEach((event) => {
+      window.removeEventListener(
+        event,
+        resetLogoutTimer
+      );
+    });
+
+    if (logoutTimer.current) {
+      clearTimeout(logoutTimer.current);
+    }
+  };
+}, []);
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
@@ -236,16 +272,64 @@ export default function AdminPage() {
     alert("Produk berhasil dihapus");
   };
 
+  const resetLogoutTimer = () => {
+  if (logoutTimer.current) {
+    clearTimeout(logoutTimer.current);
+  }
+
+  logoutTimer.current = window.setTimeout(
+    async () => {
+      alert(
+        "Session berakhir karena tidak ada aktivitas selama 10 menit"
+      );
+
+      await supabase.auth.signOut();
+
+      window.location.href = "/login";
+    },
+    30 * 1000
+  );
+};
+
   const logout = async () => {
     await supabase.auth.signOut();
     window.location.href = "/login";
   };
 
-  const filteredProducts = products.filter((product) =>
-  product.name
-    ?.toLowerCase()
-    .includes(search.toLowerCase())
-);
+const filteredProducts = products
+  .filter((product) =>
+    product.name
+      ?.toLowerCase()
+      .includes(search.toLowerCase())
+  )
+  .sort((a, b) => {
+    let result = 0;
+
+    if (sortField === "name") {
+      result = a.name.localeCompare(b.name);
+    }
+
+    if (sortField === "price") {
+      result = a.price - b.price;
+    }
+
+    if (sortField === "category") {
+      result = a.category.localeCompare(
+        b.category
+      );
+    }
+
+    if (sortField === "created_at") {
+        result =
+            new Date(a.created_at).getTime() -
+            new Date(b.created_at).getTime();
+    }
+
+    return sortDirection === "asc"
+      ? result
+      : -result;
+  });
+
   const totalPages = Math.ceil(
   filteredProducts.length / itemsPerPage
 );
@@ -255,9 +339,10 @@ const paginatedProducts = filteredProducts.slice(
   currentPage * itemsPerPage
 );
 
+
   return (
     <div className="min-h-screen bg-black text-white p-10">
-      <div className="max-w-xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">
             Dashboard Admin Nopee
@@ -390,17 +475,54 @@ const paginatedProducts = filteredProducts.slice(
   />
 
   <select
-    value={itemsPerPage}
-    onChange={(e) => {
-  setItemsPerPage(Number(e.target.value));
-  setCurrentPage(1);
-}}
-    className="p-3 rounded bg-zinc-800"
-  >
-    <option value={10}>10</option>
-    <option value={25}>25</option>
-    <option value={50}>50</option>
-  </select>
+  value={`${sortField}-${sortDirection}`}
+  onChange={(e) => {
+    const [field, direction] =
+      e.target.value.split("-");
+
+    setSortField(field);
+    setSortDirection(direction);
+  }}
+  className="p-3 rounded bg-zinc-800"
+>
+  <option value="created_at-desc">
+    Terbaru
+  </option>
+
+  <option value="created_at-asc">
+    Terlama
+  </option>
+
+  <option value="name-asc">
+    Nama A-Z
+  </option>
+
+  <option value="name-desc">
+    Nama Z-A
+  </option>
+
+  <option value="price-asc">
+    Harga Termurah
+  </option>
+
+  <option value="price-desc">
+    Harga Termahal
+  </option>
+</select>
+
+<select
+  value={itemsPerPage}
+  onChange={(e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  }}
+  className="p-3 rounded bg-zinc-800"
+>
+  <option value={10}>10</option>
+  <option value={25}>25</option>
+  <option value={50}>50</option>
+</select>
+
 </div>
 
           <div className="overflow-x-auto">
@@ -434,12 +556,12 @@ const paginatedProducts = filteredProducts.slice(
               />
             </td>
 
-            <td className="p-3 font-medium">
-              {product.name}
+            <td className="p-3 font-medium whitespace-nowrap">
+                {product.name}
             </td>
 
-            <td className="p-3 text-zinc-400">
-              {product.category}
+            <td className="p-3 text-zinc-400 whitespace-nowrap">
+                {product.category}
             </td>
 
             <td className="p-3 text-right whitespace-nowrap font-medium">
