@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "../lib/supabase";
 
 type Product = {
@@ -17,27 +18,48 @@ const { id } = useParams();
 const [product, setProduct] = useState<Product | null>(null);
 const [loading, setLoading] = useState(true);
 
+const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+const navigate = useNavigate();
+
 useEffect(() => {
-if (id) {
-fetchProduct();
-}
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+
+  if (id) {
+    fetchProduct();
+  }
 }, [id]);
 
 async function fetchProduct() {
-const { data, error } = await supabase
-.from("products")
-.select("*")
-.eq("id", id)
-.single();
+  setLoading(true);
 
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .single();
 
-if (!error && data) {
-  setProduct(data);
+  if (error || !data) {
+  setProduct(null);
+  setRelatedProducts([]);
+  setLoading(false);
+  return;
 }
 
+setProduct(data);
+
+const { data: related } = await supabase
+  .from("products")
+  .select("*")
+  .eq("category", data.category)
+  .neq("id", data.id)
+  .limit(4);
+
+setRelatedProducts(related || []);
+
 setLoading(false);
-
-
 }
 
 const openWhatsApp = () => {
@@ -83,7 +105,44 @@ Produk tidak ditemukan </div>
 );
 }
 
-return ( <div className="bg-black min-h-screen text-white"> <div className="max-w-7xl mx-auto px-6 py-10 pb-32">
+return (
+  <>
+    <Helmet>
+      <title>{product.name} | Nopee</title>
+
+      <meta
+        name="description"
+        content={
+          product.description || product.name
+        }
+      />
+
+      <meta
+        property="og:title"
+        content={product.name}
+      />
+
+      <meta
+        property="og:description"
+        content={
+          product.description || product.name
+        }
+      />
+
+      <meta
+        property="og:image"
+        content={product.image}
+      />
+
+      <meta
+        property="og:url"
+        content={window.location.href}
+      />
+    </Helmet>
+
+    <div className="bg-black min-h-screen text-white">
+
+<div className="max-w-7xl mx-auto px-6 py-10 pb-32">
 
 
     <Link
@@ -200,6 +259,53 @@ return ( <div className="bg-black min-h-screen text-white"> <div className="max-
     </div>
   </div>
 
+{relatedProducts.length > 0 && (
+  <section className="max-w-7xl mx-auto px-6 pb-36">
+    <h2 className="text-2xl font-bold mb-6">
+      Produk Terkait
+    </h2>
+
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+      {relatedProducts.map((item) => (
+        <div
+          key={item.id}
+          onClick={() => navigate(`/product/${item.id}`)}
+          className="
+            cursor-pointer
+            bg-zinc-900
+            border
+            border-zinc-800
+            rounded-2xl
+            overflow-hidden
+            hover:border-[#D4B08C]
+            transition
+          "
+        >
+          <img
+            src={item.image}
+            alt={item.name}
+            className="
+              w-full
+              aspect-square
+              object-cover
+            "
+          />
+
+          <div className="p-4">
+            <h3 className="font-medium line-clamp-2 mb-2">
+              {item.name}
+            </h3>
+
+            <p className="text-[#D4B08C] font-semibold">
+              Rp {Number(item.price).toLocaleString("id-ID")}
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
   <div
     className="
       md:hidden
@@ -231,6 +337,6 @@ return ( <div className="bg-black min-h-screen text-white"> <div className="max-
 
 </div>
 
-
+</>
 );
 }

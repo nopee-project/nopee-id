@@ -12,6 +12,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
 
   const [currentBanner, setCurrentBanner] = useState(0);
   const [dbProducts, setDbProducts] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [selectedCategory, setSelectedCategory] =
     useState("Semua");
   const categories = [
@@ -36,17 +37,20 @@ import banner3 from "../assets/banners/banner-3.jpg";
 
   return matchCategory && matchSearch;
 });
+
   const loadProducts = async () => {
+  setLoadingProducts(true);
 
   const { data, error } = await supabase
     .from("products")
     .select("*")
     .order("created_at", { ascending: false });
 
-
   if (!error) {
     setDbProducts(data || []);
   }
+
+  setLoadingProducts(false);
 };
 
   useEffect(() => {
@@ -207,7 +211,9 @@ import banner3 from "../assets/banners/banner-3.jpg";
 </div>
 
 <p className="text-gray-500 mt-4">
-  Menampilkan {filteredProducts.length} produk
+  {loadingProducts
+    ? "Memuat produk..."
+    : `Menampilkan ${filteredProducts.length} produk`}
 </p>
 
   <div className="flex flex-wrap justify-center gap-3 mt-8">
@@ -237,50 +243,109 @@ import banner3 from "../assets/banners/banner-3.jpg";
   </div>
 </div>
 
-    <div className="grid md:grid-cols-3 gap-8">
-      {(
-  showAllProducts
-    ? filteredProducts
-    : filteredProducts.slice(0, 6)
-).map((product, index) => {
+    {loadingProducts ? (
 
-        return (
-          <Link
-            key={product.id || index}
-            to={`/product/${product.id}`}
-          >
-            <div className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-[#D4B08C] transition">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-[420px] object-cover"
-              />
+  <div className="grid md:grid-cols-3 gap-8">
+    {[...Array(6)].map((_, index) => (
+      <div
+        key={index}
+        className="
+          bg-zinc-900
+          rounded-2xl
+          overflow-hidden
+          border
+          border-zinc-800
+          animate-pulse
+        "
+      >
+        <div className="w-full h-[420px] bg-zinc-800" />
 
-              <div className="p-6">
-                <p className="text-sm text-[#D4B08C] mb-2">
-                  {product.category}
-                </p>
+        <div className="p-6">
+          <div className="h-4 w-24 bg-zinc-800 rounded mb-4" />
 
-                <h3 className="text-xl font-semibold mb-2">
-                  {product.name}
-                </h3>
+          <div className="h-6 w-3/4 bg-zinc-800 rounded mb-4" />
 
-                <p className="text-gray-400 text-sm mb-4">
-                  {product.description}
-                </p>
+          <div className="h-4 w-full bg-zinc-800 rounded mb-2" />
 
-                <span className="text-[#D4B08C] font-semibold text-lg">
-                  Rp {Number(product.price).toLocaleString("id-ID")}
-                </span>
-              </div>
-            </div>
-          </Link>
-        );
-      })}
+          <div className="h-4 w-2/3 bg-zinc-800 rounded mb-6" />
+
+          <div className="h-6 w-32 bg-zinc-800 rounded" />
+        </div>
+      </div>
+    ))}
+  </div>
+
+) : filteredProducts.length === 0 ? (
+
+  <div
+    className="
+      text-center
+      py-20
+      border
+      border-zinc-800
+      rounded-3xl
+      bg-zinc-950
+    "
+  >
+    <div className="text-5xl mb-4">
+      📦
     </div>
 
+    <h3 className="text-2xl font-semibold mb-3">
+      Produk Tidak Ditemukan
+    </h3>
+
+    <p className="text-gray-400">
+      Coba gunakan kata kunci lain atau pilih kategori berbeda.
+    </p>
+  </div>
+
+) : (
+
+  <div className="grid md:grid-cols-3 gap-8">
+    {(
+      showAllProducts
+        ? filteredProducts
+        : filteredProducts.slice(0, 6)
+    ).map((product, index) => {
+      return (
+        <Link
+          key={product.id || index}
+          to={`/product/${product.id}`}
+        >
+          <div className="group bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-[#D4B08C] transition">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-[420px] object-cover"
+            />
+
+            <div className="p-6">
+              <p className="text-sm text-[#D4B08C] mb-2">
+                {product.category}
+              </p>
+
+              <h3 className="text-xl font-semibold mb-2">
+                {product.name}
+              </h3>
+
+              <p className="text-gray-400 text-sm mb-4">
+                {product.description}
+              </p>
+
+              <span className="text-[#D4B08C] font-semibold text-lg">
+                Rp {Number(product.price).toLocaleString("id-ID")}
+              </span>
+            </div>
+          </div>
+        </Link>
+      );
+    })}
+  </div>
+)}
+
     
-  {filteredProducts.length > 6 && (
+  {!loadingProducts && filteredProducts.length > 6 && (
 
       <div className="text-center mt-10">
         <button
