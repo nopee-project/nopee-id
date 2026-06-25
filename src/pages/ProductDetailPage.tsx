@@ -115,25 +115,33 @@ Produk tidak ditemukan </div>
 }
 
 return (
-<> <Helmet> <title>{product.name} | Nopee</title>
+<> <Helmet>
+  <title>{product.name} | Nopee</title>
 
+  <meta
+    name="description"
+    content={product.description || product.name}
+  />
 
-    <meta
-      name="description"
-      content={product.description || product.name}
-    />
+  <link
+    rel="canonical"
+    href={`https://nopee.id/product/${product.slug}`}
+  />
 
-    <meta property="og:title" content={product.name} />
+  <meta property="og:title" content={product.name} />
 
-    <meta
-      property="og:description"
-      content={product.description || product.name}
-    />
+  <meta
+    property="og:description"
+    content={product.description || product.name}
+  />
 
-    <meta property="og:image" content={product.image} />
+  <meta property="og:image" content={product.image} />
 
-    <meta property="og:url" content={window.location.href} />
-  </Helmet>
+  <meta
+    property="og:url"
+    content={`https://nopee.id/product/${product.slug}`}
+  />
+</Helmet>
 
   <div className="bg-black min-h-screen text-white">
     <div className="max-w-7xl mx-auto px-6 py-10 pb-32">

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "../lib/supabase";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo-nopee.png";
@@ -71,7 +72,20 @@ import {
     }, []);
 
   return (
+    <>
+    <Helmet>
+  <title>
+  Nopee - Fashion Premium untuk Wanita, Pria & Anak
+  </title>
+
+  <link
+    rel="canonical"
+    href="https://nopee.id/"
+  />
+</Helmet>
+
     <div className="bg-black text-white min-h-screen overflow-hidden">
+
       {/* NAVBAR */}
       <header className="sticky top-0 z-50 bg-black/90 backdrop-blur border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
@@ -519,5 +533,6 @@ import {
   </div>
 </footer>
     </div>
+    </>
   );
 }
