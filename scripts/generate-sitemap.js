@@ -5,9 +5,6 @@ import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
-  "SUPABASE KEY:",
-  process.env.VITE_SUPABASE_ANON_KEY ? "FOUND" : "NOT FOUND"
-);
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
@@ -29,7 +26,7 @@ async function generateSitemap() {
   // Ambil semua produk
   const { data: products, error } = await supabase
     .from("products")
-    .select("id");
+    .select("slug");
 
   if (error) {
     console.error(error);
@@ -39,7 +36,7 @@ async function generateSitemap() {
   // Tambahkan semua produk ke sitemap
   products.forEach((product) => {
     sitemap.write({
-      url: `/product/${product.id}`,
+      url: `/product/${product.slug}`,
       changefreq: "weekly",
       priority: 0.8,
     });

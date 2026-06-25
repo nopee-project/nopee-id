@@ -204,6 +204,15 @@ const deleteCategory = async (
   alert("Kategori berhasil dihapus");
 };
 
+const createSlug = (text: string) => {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+};
+
   const saveProduct = async () => {
   try {
     if (!category) {
@@ -252,6 +261,9 @@ const deleteCategory = async (
       imageUrl = data.publicUrl;
     }
 
+    const slug = createSlug(name);
+
+console.log("SLUG:", slug);
     
     let error: any;
 
@@ -259,14 +271,15 @@ const deleteCategory = async (
         const result = await supabase
           .from("products")
           .update({
-            name,
-            price: Number(
-  price.replace(/\./g, "")
-),
-            category,
-            description,
-            image: imageUrl,
-          })
+  name,
+  slug,
+  price: Number(
+    price.replace(/\./g, "")
+  ),
+  category,
+  description,
+  image: imageUrl,
+})
           .eq("id", editingId);
 
         error = result.error;
@@ -277,18 +290,19 @@ const deleteCategory = async (
         }
 
         const result = await supabase
-          .from("products")
-          .insert([
-            {
-              name,
-              price: Number(
-  price.replace(/\./g, "")
-),
-              category,
-              description,
-              image: imageUrl,
-            },
-          ]);
+  .from("products")
+  .insert([
+    {
+      name,
+      slug,
+      price: Number(
+        price.replace(/\./g, "")
+      ),
+      category,
+      description,
+      image: imageUrl,
+    },
+  ]);
 
         error = result.error;
       }

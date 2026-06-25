@@ -51,9 +51,11 @@ import {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (!error) {
-    setDbProducts(data || []);
-  }
+ if (!error) {
+  console.log("DATA DARI SUPABASE:", data);
+
+  setDbProducts(data || []);
+}
 
   setLoadingProducts(false);
 };
@@ -308,15 +310,25 @@ import {
 ) : (
 
   <div className="grid md:grid-cols-3 gap-8">
+
     {(
       showAllProducts
         ? filteredProducts
         : filteredProducts.slice(0, 6)
     ).map((product, index) => {
-      return (
+
+  console.log(
+    "PRODUCT:",
+    product.name,
+    "SLUG:",
+    product.slug
+  );
+
+  return (
+        
         <Link
           key={product.id || index}
-          to={`/product/${product.id}`}
+          to={`/product/${product.slug}`}
         >
           <div
   className="
