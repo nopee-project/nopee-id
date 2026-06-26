@@ -28,7 +28,6 @@ import {
     "Fashion Anak",
     "Busana Muslim",
   ];
-  const [showAllProducts, setShowAllProducts] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredProducts = dbProducts.filter((product) => {
@@ -53,7 +52,6 @@ import {
     .order("created_at", { ascending: false });
 
  if (!error) {
-  console.log("DATA DARI SUPABASE:", data);
 
   setDbProducts(data || []);
 }
@@ -243,7 +241,6 @@ import {
         key={category}
         onClick={() => {
           setSelectedCategory(category);
-          setShowAllProducts(false);
         }}
         className={`
           px-5
@@ -325,18 +322,7 @@ import {
 
   <div className="grid md:grid-cols-3 gap-8">
 
-    {(
-      showAllProducts
-        ? filteredProducts
-        : filteredProducts.slice(0, 6)
-    ).map((product, index) => {
-
-  console.log(
-    "PRODUCT:",
-    product.name,
-    "SLUG:",
-    product.slug
-  );
+    {filteredProducts.slice(0, 6).map((product, index) => {
 
   return (
         
@@ -405,35 +391,29 @@ import {
   </div>
 )}
 
-    
-  {!loadingProducts && filteredProducts.length > 6 && (
+{!loadingProducts && filteredProducts.length > 6 && (
+  <div className="text-center mt-10">
+    <Link
+      to="/products"
+      className="
+        inline-block
+        px-8
+        py-3
+        rounded-xl
+        border
+        border-[#D4B08C]
+        text-[#D4B08C]
+        hover:bg-[#D4B08C]
+        hover:text-black
+        transition
+        font-medium
+      "
+    >
+      Lihat Semua Produk
+    </Link>
+  </div>
+)}
 
-      <div className="text-center mt-10">
-        <button
-          onClick={() =>
-            setShowAllProducts(!showAllProducts)
-          }
-          className="
-            px-8
-            py-3
-            rounded-xl
-            border
-            border-[#D4B08C]
-            text-[#D4B08C]
-            hover:bg-[#D4B08C]
-            hover:text-black
-            transition
-            font-medium
-          "
-        >
-          {showAllProducts
-            ? "Tampilkan Lebih Sedikit"
-            : `Lihat Semua Produk (${filteredProducts.length})`
-        }
-
-        </button>
-      </div>
-    )}
   </div>
 </section>
 
