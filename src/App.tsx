@@ -9,6 +9,7 @@ import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import ProductsPage from "./pages/ProductsPage";
+import CategoryPage from "./pages/CategoryPage";
 
 function App() {
   return (
@@ -22,6 +23,11 @@ function App() {
         <Route
           path="/products"
           element={<ProductsPage />}
+        />
+
+        <Route
+          path="/category/:slug"
+          element={<CategoryPage />}
         />
 
         <Route
