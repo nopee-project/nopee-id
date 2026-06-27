@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "../lib/supabase";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo-nopee.png";
+//import logo from "../assets/logo-nopee.png";
 
 import banner1 from "../assets/banners/banner-1.jpg";
 import banner2 from "../assets/banners/banner-2.jpg";
