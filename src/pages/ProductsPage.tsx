@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-
+import Layout from "../components/Layout";
 import { supabase } from "../lib/supabase";
 import ProductGrid from "../components/ProductGrid";
 import Pagination from "../components/Pagination";
@@ -95,7 +95,8 @@ const paginatedProducts =
         />
       </Helmet>
 
-      <div className="min-h-screen bg-black text-white">
+      <Layout>
+  <div>
 
         <div className="max-w-7xl mx-auto px-6 py-16">
 
@@ -179,6 +180,7 @@ const paginatedProducts =
         </div>
 
       </div>
-    </>
+</Layout>
+</>
   );
 }

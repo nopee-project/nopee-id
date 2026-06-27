@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import Layout from "../components/Layout";
 import { useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import ProductGrid from "../components/ProductGrid";
@@ -60,7 +61,9 @@ useEffect(() => {
   />
 </Helmet>
 
-    <div className="min-h-screen bg-black text-white">
+    <Layout>
+  <div className="flex items-center justify-center">
+
       <div className="max-w-7xl mx-auto px-6 py-20">
 
     <h1 className="text-4xl font-bold mb-10">
@@ -76,7 +79,8 @@ useEffect(() => {
     />
   )}
 </div>
-    </div>
-    </>
+   </div>
+</Layout>
+</>
   );
 }

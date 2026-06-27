@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import Layout from "../components/Layout";
 import { supabase } from "../lib/supabase";
 
 type Product = {
@@ -143,7 +144,8 @@ return (
   />
 </Helmet>
 
-  <div className="bg-black min-h-screen text-white">
+  <Layout>
+
     <div className="max-w-7xl mx-auto px-6 py-10 pb-32">
       <Link
         to="/"
@@ -316,7 +318,7 @@ return (
         Pesan via WhatsApp
       </button>
     </div>
-  </div>
+  </Layout>
 </>
 
 
