@@ -143,12 +143,13 @@ if (existing) {
   if (!categoryName) return;
 
   const { error } = await supabase
-    .from("categories")
-    .insert([
-      {
-        name: categoryName,
-      },
-    ]);
+  .from("categories")
+  .insert([
+    {
+      name: categoryName,
+      slug: createSlug(categoryName),
+    },
+  ]);
 
   if (error) {
     alert(error.message);

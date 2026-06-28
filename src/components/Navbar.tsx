@@ -3,10 +3,20 @@ import { Link, NavLink } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 
 import logo from "../assets/logo-nopee.png";
+import { supabase } from "../lib/supabase";
+
+type Category = {
+  id: number;
+  name: string;
+  slug: string;
+};
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
+
   const menuRef = useRef<HTMLDivElement>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const navLinkClass = ({
     isActive,
@@ -19,9 +29,27 @@ export default function Navbar() {
         : "hover:text-[#D4B08C]"
     }`;
 
+    const fetchCategories = async () => {
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .order("name");
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setCategories((data as Category[]) || []);
+};
+
+useEffect(() => {
+  fetchCategories();
+}, []);
+
   // Close menu when clicking outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: MouseEvent) { 
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target as Node)
@@ -78,12 +106,46 @@ export default function Navbar() {
             Home
           </NavLink>
 
-          <NavLink
-            to="/products"
-            className={navLinkClass}
-          >
-            Products
-          </NavLink>
+          <div
+  className="relative"
+  onMouseEnter={() => setDesktopMenuOpen(true)}
+  onMouseLeave={() => setDesktopMenuOpen(false)}
+>
+  <NavLink
+    to="/products"
+    className={navLinkClass}
+  >
+    Products ▼
+  </NavLink>
+
+  {desktopMenuOpen && (
+    <div
+      className="
+        absolute
+        top-full
+        left-0
+        mt-0
+        w-56
+        bg-black
+        border
+        border-zinc-800
+        rounded-xl
+        shadow-2xl
+        py-2
+      "
+    >
+      {categories.map((category) => (
+  <NavLink
+    key={category.id}
+    to={`/category/${category.slug}`}
+    className="block px-5 py-3 hover:bg-zinc-900 hover:text-[#D4B08C]"
+  >
+    {category.name}
+  </NavLink>
+))}
+    </div>
+  )}
+</div>
 
           <a
             href="https://wa.me/6287887978989"
@@ -179,53 +241,18 @@ export default function Navbar() {
 
           <div className="flex flex-col ml-5">
 
-            <NavLink
-              to="/category/fashion-wanita"
-              className={({ isActive }) =>
-                `${navLinkClass({
-                  isActive,
-                })} py-2`
-              }
-              onClick={() => setMenuOpen(false)}
-            >
-              Fashion Wanita
-            </NavLink>
-
-            <NavLink
-              to="/category/fashion-pria"
-              className={({ isActive }) =>
-                `${navLinkClass({
-                  isActive,
-                })} py-2`
-              }
-              onClick={() => setMenuOpen(false)}
-            >
-              Fashion Pria
-            </NavLink>
-
-            <NavLink
-              to="/category/fashion-anak"
-              className={({ isActive }) =>
-                `${navLinkClass({
-                  isActive,
-                })} py-2`
-              }
-              onClick={() => setMenuOpen(false)}
-            >
-              Fashion Anak
-            </NavLink>
-
-            <NavLink
-              to="/category/busana-muslim"
-              className={({ isActive }) =>
-                `${navLinkClass({
-                  isActive,
-                })} py-2`
-              }
-              onClick={() => setMenuOpen(false)}
-            >
-              Busana Muslim
-            </NavLink>
+            {categories.map((category) => (
+  <NavLink
+    key={category.id}
+    to={`/category/${category.slug}`}
+    className={({ isActive }) =>
+      `${navLinkClass({ isActive })} py-2`
+    }
+    onClick={() => setMenuOpen(false)}
+  >
+    {category.name}
+  </NavLink>
+))}
 
           </div>
 

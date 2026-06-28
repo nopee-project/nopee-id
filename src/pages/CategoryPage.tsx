@@ -11,35 +11,37 @@ export default function CategoryPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const categoryName = slug
-  ?.split("-")
-  .map(
-    (word) =>
-      word.charAt(0).toUpperCase() + word.slice(1)
-  )
-  .join(" ");
+  const [categoryName, setCategoryName] = useState("");
 
 const loadProducts = async () => {
   if (!slug) return;
 
   setLoading(true);
 
-  const category = slug
-    .split("-")
-    .map(
-      (word) =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-    )
-    .join(" ");
+  const { data: category } = await supabase
+    .from("categories")
+    .select("*")
+    .eq("slug", slug)
+    .single();
 
-  const { data, error } = await supabase
+  if (!category) {
+    setProducts([]);
+    setLoading(false);
+    return;
+  }
+
+  setCategoryName(category.name);
+
+  const { data: products, error } = await supabase
     .from("products")
     .select("*")
-    .eq("category", category)
-    .order("created_at", { ascending: false });
+    .eq("category", category.name)
+    .order("created_at", {
+      ascending: false,
+    });
 
   if (!error) {
-    setProducts(data || []);
+    setProducts(products || []);
   }
 
   setLoading(false);
@@ -62,9 +64,9 @@ useEffect(() => {
 </Helmet>
 
     <Layout>
-  <div className="flex items-center justify-center">
+  <div>
 
-      <div className="max-w-7xl mx-auto px-6 py-20">
+    <div className="max-w-7xl mx-auto px-6 py-16">
 
     <h1 className="text-4xl font-bold mb-10">
   {categoryName}
@@ -75,7 +77,7 @@ useEffect(() => {
   ) : (
     <ProductGrid
       products={products}
-      columns={3}
+      columns={6}
     />
   )}
 </div>

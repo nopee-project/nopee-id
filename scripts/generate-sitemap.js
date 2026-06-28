@@ -1,7 +1,6 @@
 import { SitemapStream, streamToPromise } from "sitemap";
 import { writeFileSync } from "fs";
 import dotenv from "dotenv";
-
 import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
@@ -11,49 +10,57 @@ const supabase = createClient(
   process.env.VITE_SUPABASE_ANON_KEY
 );
 
+const SITE_URL = "https://nopee.id";
+
 async function generateSitemap() {
-  const sitemap = new SitemapStream({
-    hostname: "https://nopee.id",
-  });
-
-  // Homepage
-  sitemap.write({
-    url: "/",
-    changefreq: "daily",
-    priority: 1.0,
-  });
-
-  // Ambil semua produk
-  const { data: products, error } = await supabase
-    .from("products")
-    .select("slug");
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  // Tambahkan semua produk ke sitemap
-  products.forEach((product) => {
-    sitemap.write({
-      url: `/product/${product.slug}`,
-      changefreq: "weekly",
-      priority: 0.8,
+  try {
+    const sitemap = new SitemapStream({
+      hostname: SITE_URL,
     });
-  });
 
-  sitemap.end();
+    // Homepage
+    sitemap.write({
+      url: "/",
+      changefreq: "daily",
+      priority: 1.0,
+    });
 
-  const data = await streamToPromise(sitemap);
+    // Ambil semua produk
+    const { data: products, error } = await supabase
+      .from("products")
+      .select("slug, updated_at");
 
-  writeFileSync(
-    "./public/sitemap.xml",
-    data.toString()
-  );
+    if (error) {
+      console.error("❌ Failed to fetch products:", error);
+      process.exit(1);
+    }
 
-  console.log(
-    `✅ Sitemap generated with ${products.length} products`
-  );
+    // Tambahkan semua produk ke sitemap
+    products?.forEach((product) => {
+      sitemap.write({
+        url: `/product/${product.slug}`,
+        lastmod: product.updated_at,
+        changefreq: "weekly",
+        priority: 0.8,
+      });
+    });
+
+    sitemap.end();
+
+    const xml = await streamToPromise(sitemap);
+
+    writeFileSync(
+      "./public/sitemap.xml",
+      xml.toString()
+    );
+
+    console.log(
+      `✅ Sitemap generated successfully with ${products?.length || 0} products`
+    );
+  } catch (err) {
+    console.error("❌ Sitemap generation failed:", err);
+    process.exit(1);
+  }
 }
 
 generateSitemap();

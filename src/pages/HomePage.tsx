@@ -15,29 +15,6 @@ import banner3 from "../assets/banners/banner-3.jpg";
   const [currentBanner, setCurrentBanner] = useState(0);
   const [dbProducts, setDbProducts] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
-  const [selectedCategory, setSelectedCategory] =
-    useState("Semua");
-  const categories = [
-    "Semua",
-    "Fashion Wanita",
-    "Fashion Pria",
-    "Fashion Anak",
-    "Busana Muslim",
-  ];
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const filteredProducts = dbProducts.filter((product) => {
-  const matchCategory =
-    selectedCategory === "Semua" ||
-    product.category === selectedCategory;
-
-  const matchSearch =
-    product.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-  return matchCategory && matchSearch;
-});
 
   const loadProducts = async () => {
   setLoadingProducts(true);
@@ -159,65 +136,14 @@ import banner3 from "../assets/banners/banner-3.jpg";
   <div className="max-w-7xl mx-auto px-6">
     <div className="text-center mb-14">
   <h2 className="font-luxury text-4xl md:text-5xl font-semibold mb-4">
-    Produk Unggulan
+    Produk Terbaru
   </h2>
 
   <p className="text-gray-400">
     Koleksi terbaru dari katalog Nopee
   </p>
 
-  <div className="mt-8 max-w-md mx-auto">
-  <input
-    type="text"
-    placeholder="Cari produk..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="
-      w-full
-      px-4
-      py-3
-      rounded-xl
-      bg-zinc-900
-      border
-      border-zinc-700
-      text-white
-      placeholder-gray-500
-      focus:outline-none
-      focus:border-[#D4B08C]
-    "
-  />
-</div>
 
-<p className="text-gray-500 mt-4">
-  {loadingProducts
-    ? "Memuat produk..."
-    : `Menampilkan ${filteredProducts.length} produk`}
-</p>
-
-  <div className="flex flex-wrap justify-center gap-3 mt-8">
-    {categories.map((category) => (
-      <button
-        key={category}
-        onClick={() => {
-          setSelectedCategory(category);
-        }}
-        className={`
-          px-5
-          py-2
-          rounded-full
-          border
-          transition
-          ${
-            selectedCategory === category
-              ? "bg-[#D4B08C] text-black border-[#D4B08C]"
-              : "border-zinc-700 text-gray-300 hover:border-[#D4B08C]"
-          }
-        `}
-      >
-        {category}
-      </button>
-    ))}
-  </div>
 </div>
 
     {loadingProducts ? (
@@ -252,7 +178,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
     ))}
   </div>
 
-) : filteredProducts.length === 0 ? (
+) : dbProducts.length === 0 ? (
 
   <div
     className="
@@ -279,9 +205,9 @@ import banner3 from "../assets/banners/banner-3.jpg";
 
 ) : (
 
-  <div className="grid md:grid-cols-3 gap-8">
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
 
-    {filteredProducts.slice(0, 6).map((product, index) => {
+    {dbProducts.slice(0, 6).map((product, index) => {
 
   return (
         
@@ -292,6 +218,9 @@ import banner3 from "../assets/banners/banner-3.jpg";
           <div
   className="
     group
+    flex
+    flex-col
+    h-full
     bg-zinc-900
     rounded-2xl
     overflow-hidden
@@ -309,33 +238,36 @@ import banner3 from "../assets/banners/banner-3.jpg";
   alt={product.name}
   loading="lazy"
   className="
-    w-full
-    h-[420px]
-    object-cover
-    transition-transform
-    duration-500
-    group-hover:scale-105
+   w-full
+   h-52
+   md:h-[420px]
+   object-cover
+   transition-transform
+   duration-500
+   group-hover:scale-105
   "
 />
 
-            <div className="p-6">
-              <p className="text-sm text-[#D4B08C] mb-2">
+            <div className="flex flex-col flex-1 p-4 md:p-6">
+              <p className="text-xs md:text-sm text-[#D4B08C] mb-2">
                 {product.category}
               </p>
 
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-lg md:text-xl font-semibold mb-2 leading-tight">
                 {product.name}
               </h3>
 
-              <p className="text-gray-400 text-sm mb-4 line-clamp-2 min-h-[40px]">
+              <p className="text-xs md:text-sm text-gray-400 mb-3 md:mb-4 line-clamp-2 min-h-[32px] md:min-h-[40px]">
                 {product.description}
               </p>
 
               <span
   className="
+    mt-auto
+    pt-4
     text-[#D4B08C]
     font-semibold
-    text-lg
+    text-lg md:text-xl
     transition
     group-hover:text-[#e8c59f]
   "
@@ -350,7 +282,7 @@ import banner3 from "../assets/banners/banner-3.jpg";
   </div>
 )}
 
-{!loadingProducts && filteredProducts.length > 6 && (
+{!loadingProducts && dbProducts.length > 6 && (
   <div className="text-center mt-10">
     <Link
       to="/products"

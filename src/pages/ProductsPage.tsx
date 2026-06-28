@@ -17,40 +17,57 @@ type Product = {
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
+
+  const [categories, setCategories] = useState<
+  {
+    id: number;
+    name: string;
+    slug: string;
+  }[]
+>([]);
+
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    loadProducts();
-  }, []);
+  loadProducts();
+  loadCategories();
+}, []);
 
   useEffect(() => {
   setCurrentPage(1);
 }, [search, selectedCategory]);
 
-  async function loadProducts() {
-    setLoading(true);
+  async function loadCategories() {
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .order("name");
 
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .order("created_at", {
-        ascending: false,
-      });
-
-    setProducts(data || []);
-    setLoading(false);
+  if (error) {
+    console.error(error);
+    return;
   }
 
-const categories = [
-  "Semua",
-  "Fashion Wanita",
-  "Fashion Pria",
-  "Fashion Anak",
-  "Busana Muslim",
-];
+  setCategories(data || []);
+}
+
+async function loadProducts() {
+  setLoading(true);
+
+  const { data } = await supabase
+    .from("products")
+    .select("*")
+    .order("created_at", {
+      ascending: false,
+    });
+
+  setProducts(data || []);
+  setLoading(false);
+}
+
 
 const filteredProducts = products.filter((product) => {
 
@@ -131,10 +148,29 @@ const paginatedProducts =
 </div>
 
 <div className="flex flex-wrap justify-center gap-3 mb-10">
+  <>
+  <button
+    onClick={() => setSelectedCategory("Semua")}
+    className={`
+      px-5
+      py-2
+      rounded-full
+      border
+      transition
+      ${
+        selectedCategory === "Semua"
+          ? "bg-[#D4B08C] text-black border-[#D4B08C]"
+          : "border-zinc-700 text-gray-300 hover:border-[#D4B08C]"
+      }
+    `}
+  >
+    Semua
+  </button>
+
   {categories.map((category) => (
     <button
-      key={category}
-      onClick={() => setSelectedCategory(category)}
+      key={category.id}
+      onClick={() => setSelectedCategory(category.name)}
       className={`
         px-5
         py-2
@@ -142,15 +178,16 @@ const paginatedProducts =
         border
         transition
         ${
-          selectedCategory === category
+          selectedCategory === category.name
             ? "bg-[#D4B08C] text-black border-[#D4B08C]"
             : "border-zinc-700 text-gray-300 hover:border-[#D4B08C]"
         }
       `}
     >
-      {category}
+      {category.name}
     </button>
   ))}
+</>
 </div>
 
           {loading ? (
