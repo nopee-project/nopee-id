@@ -50,7 +50,7 @@ export default function AdminSettingsModal({
     const { error } = await supabase
       .from("settings")
       .update(settings)
-      .eq("id", 1);
+      .eq("id", 2);
 
     setLoading(false);
 
