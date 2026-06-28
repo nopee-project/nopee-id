@@ -28,7 +28,7 @@ async function generateSitemap() {
     // Ambil semua produk
     const { data: products, error } = await supabase
       .from("products")
-      .select("slug, updated_at");
+      .select("slug, created_at");
 
     if (error) {
       console.error("❌ Failed to fetch products:", error);
@@ -39,7 +39,7 @@ async function generateSitemap() {
     products?.forEach((product) => {
       sitemap.write({
         url: `/product/${product.slug}`,
-        lastmod: product.updated_at,
+        lastmod: product.created_at,
         changefreq: "weekly",
         priority: 0.8,
       });
