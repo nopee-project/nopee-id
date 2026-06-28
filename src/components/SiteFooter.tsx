@@ -48,7 +48,7 @@ export default function SiteFooter() {
     setLinks(data || []);
   }
 
-  const icons: Record<string, JSX.Element> = {
+  const icons: Record<string, React.ReactElement> = {
     instagram: <FaInstagram size={24} />,
     facebook: <FaFacebookF size={24} />,
     tiktok: <FaTiktok size={22} />,
