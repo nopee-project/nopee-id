@@ -44,9 +44,9 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>Nopee - Fashion Premium untuk Wanita, Pria & Anak</title>
+        <title>Nopee. - Fashion Premium untuk Wanita, Pria & Anak</title>
 
-        <link rel="canonical" href="https://nopee.id/" />
+        <link rel="canonical" href="https://www.nopee.id/" />
       </Helmet>
 
       <Layout>
