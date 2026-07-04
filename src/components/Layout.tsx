@@ -6,20 +6,14 @@ type Props = {
   children: ReactNode;
 };
 
-
-
-export default function Layout({
-  children,
-}: Props) {
+export default function Layout({ children }: Props) {
   return (
     <div className="min-h-screen bg-black text-white">
-    <Navbar />
+      <Navbar />
 
-  {children}
+      {children}
 
-    <SiteFooter />
-
-</div>
+      <SiteFooter />
+    </div>
   );
 }
-

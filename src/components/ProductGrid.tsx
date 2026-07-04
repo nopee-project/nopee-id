@@ -16,10 +16,7 @@ type Props = {
   columns?: 3 | 4 | 6;
 };
 
-export default function ProductGrid({
-  products,
-  columns = 3,
-}: Props) {
+export default function ProductGrid({ products, columns = 3 }: Props) {
   let gridClass = "";
 
   if (columns === 3) {
@@ -31,27 +28,20 @@ export default function ProductGrid({
   }
 
   if (columns === 6) {
-    gridClass =
-      "grid grid-cols-2 md:grid-cols-6 gap-4";
+    gridClass = "grid grid-cols-2 md:grid-cols-6 gap-4";
   }
 
   console.log(products);
-  
+
   return (
     <div className={gridClass}>
-  {products.map((product) =>
-    columns === 6 ? (
-      <CatalogCard
-        key={product.id}
-        product={product}
-      />
-    ) : (
-      <ProductCard
-        key={product.id}
-        product={product}
-      />
-    )
-  )}
-</div>
+      {products.map((product) =>
+        columns === 6 ? (
+          <CatalogCard key={product.id} product={product} />
+        ) : (
+          <ProductCard key={product.id} product={product} />
+        )
+      )}
+    </div>
   );
 }

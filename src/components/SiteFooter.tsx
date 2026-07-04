@@ -11,10 +11,7 @@ import {
   FaTelegram,
 } from "react-icons/fa";
 
-import {
-  SiShopee,
-  SiX,
-} from "react-icons/si";
+import { SiShopee, SiX } from "react-icons/si";
 
 type SocialLink = {
   id: number;
@@ -26,7 +23,6 @@ type SocialLink = {
 };
 
 export default function SiteFooter() {
-
   const [links, setLinks] = useState<SocialLink[]>([]);
 
   useEffect(() => {
@@ -63,30 +59,24 @@ export default function SiteFooter() {
   return (
     <footer className="border-t border-zinc-800 py-8">
       <div className="max-w-7xl mx-auto px-6 text-center">
-
         <div className="flex justify-center gap-6 mb-6">
-  {links.map((link) => (
-    <a
-      key={link.id}
-      href={link.url}
-      target="_blank"
-      rel="noreferrer"
-      className="text-gray-400 hover:text-[#D4B08C] transition"
-      title={link.name}
-    >
-      {icons[link.icon.toLowerCase()] ?? (
-        <span className="text-sm font-bold">
-          {link.name.charAt(0)}
-        </span>
-      )}
-    </a>
-  ))}
-</div>
-
-        <div className="text-gray-500">
-          © 2023 Nopee. All Rights Reserved.
+          {links.map((link) => (
+            <a
+              key={link.id}
+              href={link.url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-gray-400 hover:text-[#D4B08C] transition"
+              title={link.name}
+            >
+              {icons[link.icon.toLowerCase()] ?? (
+                <span className="text-sm font-bold">{link.name.charAt(0)}</span>
+              )}
+            </a>
+          ))}
         </div>
 
+        <div className="text-gray-500">© 2023 Nopee. All Rights Reserved.</div>
       </div>
     </footer>
   );

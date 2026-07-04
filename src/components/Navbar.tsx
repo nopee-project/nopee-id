@@ -18,66 +18,44 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const navLinkClass = ({
-    isActive,
-  }: {
-    isActive: boolean;
-  }) =>
-    `transition ${
-      isActive
-        ? "text-[#D4B08C]"
-        : "hover:text-[#D4B08C]"
-    }`;
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `transition ${isActive ? "text-[#D4B08C]" : "hover:text-[#D4B08C]"}`;
 
-    const fetchCategories = async () => {
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .order("name");
+  const fetchCategories = async () => {
+    const { data, error } = await supabase.from("categories").select("*").order("name");
 
-  if (error) {
-    console.error(error);
-    return;
-  }
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-  setCategories((data as Category[]) || []);
-};
+    setCategories((data as Category[]) || []);
+  };
 
-useEffect(() => {
-  fetchCategories();
-}, []);
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   // Close menu when clicking outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) { 
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
       }
     }
 
     if (menuOpen) {
-      document.addEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpen]);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
-    document.body.style.overflow = menuOpen
-      ? "hidden"
-      : "auto";
+    document.body.style.overflow = menuOpen ? "hidden" : "auto";
 
     return () => {
       document.body.style.overflow = "auto";
@@ -87,40 +65,28 @@ useEffect(() => {
   return (
     <header className="sticky top-0 z-50 bg-black/90 backdrop-blur border-b border-zinc-800">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-
         <Link to="/">
-          <img
-            src={logo}
-            alt="Nopee"
-            className="h-16 md:h-20 w-auto"
-          />
+          <img src={logo} alt="Nopee" className="h-16 md:h-20 w-auto" />
         </Link>
 
         {/* Desktop Menu */}
         <nav className="hidden md:flex gap-10 text-sm">
-
-          <NavLink
-            to="/"
-            className={navLinkClass}
-          >
+          <NavLink to="/" className={navLinkClass}>
             Home
           </NavLink>
 
           <div
-  className="relative"
-  onMouseEnter={() => setDesktopMenuOpen(true)}
-  onMouseLeave={() => setDesktopMenuOpen(false)}
->
-  <NavLink
-    to="/products"
-    className={navLinkClass}
-  >
-    Products ▼
-  </NavLink>
+            className="relative"
+            onMouseEnter={() => setDesktopMenuOpen(true)}
+            onMouseLeave={() => setDesktopMenuOpen(false)}
+          >
+            <NavLink to="/products" className={navLinkClass}>
+              Products ▼
+            </NavLink>
 
-  {desktopMenuOpen && (
-    <div
-      className="
+            {desktopMenuOpen && (
+              <div
+                className="
         absolute
         top-full
         left-0
@@ -133,19 +99,19 @@ useEffect(() => {
         shadow-2xl
         py-2
       "
-    >
-      {categories.map((category) => (
-  <NavLink
-    key={category.id}
-    to={`/category/${category.slug}`}
-    className="block px-5 py-3 hover:bg-zinc-900 hover:text-[#D4B08C]"
-  >
-    {category.name}
-  </NavLink>
-))}
-    </div>
-  )}
-</div>
+              >
+                {categories.map((category) => (
+                  <NavLink
+                    key={category.id}
+                    to={`/category/${category.slug}`}
+                    className="block px-5 py-3 hover:bg-zinc-900 hover:text-[#D4B08C]"
+                  >
+                    {category.name}
+                  </NavLink>
+                ))}
+              </div>
+            )}
+          </div>
 
           <a
             href="https://wa.me/6287887978989"
@@ -155,19 +121,11 @@ useEffect(() => {
           >
             WhatsApp
           </a>
-
         </nav>
 
         {/* Mobile Hamburger */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-white"
-        >
-          {menuOpen ? (
-            <X size={30} />
-          ) : (
-            <Menu size={30} />
-          )}
+        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-white">
+          {menuOpen ? <X size={30} /> : <Menu size={30} />}
         </button>
       </div>
 
@@ -195,18 +153,13 @@ useEffect(() => {
           transition-all
           duration-300
           z-50
-          ${
-            menuOpen
-              ? "max-h-[700px] opacity-100"
-              : "max-h-0 opacity-0"
-          }
+          ${menuOpen ? "max-h-[700px] opacity-100" : "max-h-0 opacity-0"}
         `}
       >
         <nav
           className="flex flex-col px-6 pt-6 pb-8 text-lg"
           style={{
-            paddingBottom:
-              "calc(env(safe-area-inset-bottom) + 2rem)",
+            paddingBottom: "calc(env(safe-area-inset-bottom) + 2rem)",
           }}
         >
           <NavLink
@@ -235,25 +188,19 @@ useEffect(() => {
 
           <div className="border-t border-zinc-800 my-6" />
 
-          <p className="text-sm text-zinc-500 uppercase tracking-wider mb-3">
-            Categories
-          </p>
+          <p className="text-sm text-zinc-500 uppercase tracking-wider mb-3">Categories</p>
 
           <div className="flex flex-col ml-5">
-
             {categories.map((category) => (
-  <NavLink
-    key={category.id}
-    to={`/category/${category.slug}`}
-    className={({ isActive }) =>
-      `${navLinkClass({ isActive })} py-2`
-    }
-    onClick={() => setMenuOpen(false)}
-  >
-    {category.name}
-  </NavLink>
-))}
-
+              <NavLink
+                key={category.id}
+                to={`/category/${category.slug}`}
+                className={({ isActive }) => `${navLinkClass({ isActive })} py-2`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {category.name}
+              </NavLink>
+            ))}
           </div>
 
           <div className="border-t border-zinc-800 my-6" />
@@ -266,10 +213,8 @@ useEffect(() => {
           >
             WhatsApp
           </a>
-
         </nav>
       </div>
     </header>
   );
 }
-

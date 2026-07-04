@@ -5,10 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.VITE_SUPABASE_ANON_KEY
-);
+const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_ANON_KEY);
 
 const SITE_URL = "https://nopee.id";
 
@@ -26,9 +23,7 @@ async function generateSitemap() {
     });
 
     // Ambil semua produk
-    const { data: products, error } = await supabase
-      .from("products")
-      .select("slug, created_at");
+    const { data: products, error } = await supabase.from("products").select("slug, created_at");
 
     if (error) {
       console.error("❌ Failed to fetch products:", error);
@@ -49,14 +44,9 @@ async function generateSitemap() {
 
     const xml = await streamToPromise(sitemap);
 
-    writeFileSync(
-      "./public/sitemap.xml",
-      xml.toString()
-    );
+    writeFileSync("./public/sitemap.xml", xml.toString());
 
-    console.log(
-      `✅ Sitemap generated successfully with ${products?.length || 0} products`
-    );
+    console.log(`✅ Sitemap generated successfully with ${products?.length || 0} products`);
   } catch (err) {
     console.error("❌ Sitemap generation failed:", err);
     process.exit(1);

@@ -14,12 +14,9 @@ type Props = {
   product: Product;
 };
 
-export default function CatalogCard({
-  product,
-}: Props) {
+export default function CatalogCard({ product }: Props) {
+  console.log(product);
 
-    console.log(product);
-    
   return (
     <Link to={`/product/${product.slug}`}>
       <div
@@ -50,10 +47,7 @@ export default function CatalogCard({
         />
 
         <div className="p-3">
-
-          <p className="text-xs text-[#D4B08C] mb-1">
-            {product.category}
-          </p>
+          <p className="text-xs text-[#D4B08C] mb-1">{product.category}</p>
 
           <h3
             className="
@@ -76,7 +70,6 @@ export default function CatalogCard({
           >
             Rp {Number(product.price).toLocaleString("id-ID")}
           </p>
-
         </div>
       </div>
     </Link>

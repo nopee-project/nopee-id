@@ -4,16 +4,11 @@ type Props = {
   onPageChange: (page: number) => void;
 };
 
-export default function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: Props) {
+export default function Pagination({ currentPage, totalPages, onPageChange }: Props) {
   if (totalPages <= 1) return null;
 
   return (
     <div className="flex justify-center items-center gap-2 mt-12 flex-wrap">
-
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
@@ -29,10 +24,7 @@ export default function Pagination({
         ← Prev
       </button>
 
-      {Array.from(
-        { length: totalPages },
-        (_, index) => index + 1
-      ).map((page) => (
+      {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
         <button
           key={page}
           onClick={() => onPageChange(page)}
@@ -41,11 +33,7 @@ export default function Pagination({
             h-10
             rounded-lg
             transition
-            ${
-              currentPage === page
-                ? "bg-[#D4B08C] text-black"
-                : "bg-zinc-900 hover:bg-zinc-800"
-            }
+            ${currentPage === page ? "bg-[#D4B08C] text-black" : "bg-zinc-900 hover:bg-zinc-800"}
           `}
         >
           {page}
@@ -66,7 +54,6 @@ export default function Pagination({
       >
         Next →
       </button>
-
     </div>
   );
 }

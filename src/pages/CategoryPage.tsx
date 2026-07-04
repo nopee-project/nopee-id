@@ -13,76 +13,61 @@ export default function CategoryPage() {
 
   const [categoryName, setCategoryName] = useState("");
 
-const loadProducts = async () => {
-  if (!slug) return;
+  const loadProducts = async () => {
+    if (!slug) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  const { data: category } = await supabase
-    .from("categories")
-    .select("*")
-    .eq("slug", slug)
-    .single();
+    const { data: category } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("slug", slug)
+      .single();
 
-  if (!category) {
-    setProducts([]);
+    if (!category) {
+      setProducts([]);
+      setLoading(false);
+      return;
+    }
+
+    setCategoryName(category.name);
+
+    const { data: products, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("category", category.name)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    if (!error) {
+      setProducts(products || []);
+    }
+
     setLoading(false);
-    return;
-  }
+  };
 
-  setCategoryName(category.name);
-
-  const { data: products, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("category", category.name)
-    .order("created_at", {
-      ascending: false,
-    });
-
-  if (!error) {
-    setProducts(products || []);
-  }
-
-  setLoading(false);
-};
-
-useEffect(() => {
-  loadProducts();
-}, [slug]);
+  useEffect(() => {
+    loadProducts();
+  }, [slug]);
 
   return (
-
     <>
-    <Helmet>
-  <title>{`${categoryName} | Nopee`}</title>
+      <Helmet>
+        <title>{`${categoryName} | Nopee`}</title>
 
-  <link
-    rel="canonical"
-    href={`https://nopee.id/category/${slug}`}
-  />
-</Helmet>
+        <link rel="canonical" href={`https://nopee.id/category/${slug}`} />
+      </Helmet>
 
-    <Layout>
-  <div>
+      <Layout>
+        <div>
+          <div className="max-w-7xl mx-auto px-6 py-16">
+            <h1 className="text-4xl font-bold mb-10">{categoryName}</h1>
 
-    <div className="max-w-7xl mx-auto px-6 py-16">
-
-    <h1 className="text-4xl font-bold mb-10">
-  {categoryName}
-</h1>
-
-  {loading ? (
-    <p>Loading...</p>
-  ) : (
-    <ProductGrid
-      products={products}
-      columns={6}
-    />
-  )}
-</div>
-   </div>
-</Layout>
-</>
+            {loading ? <p>Loading...</p> : <ProductGrid products={products} columns={6} />}
+          </div>
+        </div>
+      </Layout>
+    </>
   );
 }

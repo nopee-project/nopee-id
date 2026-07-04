@@ -8,16 +8,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const login = async (
-    e?: React.FormEvent
-  ) => {
+  const login = async (e?: React.FormEvent) => {
     e?.preventDefault();
 
-    const { error } =
-      await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) {
       alert(error.message);
@@ -30,9 +27,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-6">
       <div className="w-full max-w-md bg-zinc-900 p-8 rounded-2xl border border-zinc-800">
-        <h1 className="text-3xl font-bold mb-6">
-          Login Admin
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">Login Admin</h1>
 
         <form onSubmit={login}>
           <input
@@ -40,9 +35,7 @@ export default function LoginPage() {
             placeholder="Email"
             className="w-full p-3 mb-4 rounded bg-zinc-800"
             value={email}
-            onChange={(e) =>
-              setEmail(e.target.value)
-            }
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <input
@@ -50,9 +43,7 @@ export default function LoginPage() {
             placeholder="Password"
             className="w-full p-3 mb-4 rounded bg-zinc-800"
             value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <button
