@@ -7,7 +7,7 @@ dotenv.config();
 
 const supabase = createClient(process.env.VITE_SUPABASE_URL, process.env.VITE_SUPABASE_ANON_KEY);
 
-const SITE_URL = "https://nopee.id";
+const SITE_URL = "https://www.nopee.id";
 
 async function generateSitemap() {
   try {
